@@ -18,7 +18,7 @@ import itertools
 import bentoml
 
 # Load and extract data
-data_dir = '../data'
+data_dir = 'data'
 for file in os.listdir(data_dir):
     if file.endswith('.zip'):
         zip_path = os.path.join(data_dir, file)

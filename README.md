@@ -70,7 +70,7 @@ This repository demonstrates how to predict house sale prices using the Ames Hou
   bentoml deploy [bento_name] -n [deployment_name]
   ```
   Attempts to deploy the Bento to the configured cloud platform.  
-  *Note:* In some cases, deployment can remain stuck in a pending state. Troubleshooting steps include verifying your BentoML configuration, cloud credentials, and checking logs for errors.
+  *Note:* For me, deployment remained stuck in 'deploying' state for more than 45 minutes. Try to redeploy the bento if this happens to you. As a sidenote, this was the first time I deployed a service to BentoML Cloud and it was not a pleasant experience. I had an idea of setting up a github action to deploy the bento automatically, but I gave up on it after a few attempts, the bentoml docs does not mention CI/CD at all and it was a hassle to try and set up.
 
 ### Docker Containerization
 1. **Generate a Docker Image**:  
