@@ -28,10 +28,12 @@ jobs:
         BENTO_CLOUD_API_ENDPOINT: ${{ secrets.BENTO_CLOUD_API_ENDPOINT }}
       run: |
         echo "Configuring BentoML Cloud..."
-        bentoml cloud login --api-token $BENTO_CLOUD_API_KEY --endpoint $BENTO_CLOUD_API_ENDPOINT
-        bentoml cloud context create default --api-token $BENTO_CLOUD_API_KEY --endpoint $BENTO_CLOUD_API_ENDPOINT
-        bentoml cloud context update default --api-token $BENTO_CLOUD_API_KEY --endpoint $BENTO_CLOUD_API_ENDPOINT
-        bentoml cloud context list
+        # Create .bentoml/config.yaml
+        mkdir -p ~/.bentoml
+        cat > ~/.bentoml/config.yaml << EOF
+        api_token: ${{ secrets.BENTO_CLOUD_API_KEY }}
+        endpoint: ${{ secrets.BENTO_CLOUD_API_ENDPOINT }}
+        EOF
         
     - name: Build and Push Bento
       run: |
@@ -51,10 +53,11 @@ jobs:
       run: |
         python - <<EOF
         import bentoml
+        import os
         
         # Configure BentoML client
-        bentoml.set_cloud_api_token("${{ secrets.BENTO_CLOUD_API_KEY }}")
-        bentoml.set_cloud_endpoint("${{ secrets.BENTO_CLOUD_API_ENDPOINT }}")
+        bentoml.set_cloud_api_token(os.environ["BENTO_CLOUD_API_KEY"])
+        bentoml.set_cloud_endpoint(os.environ["BENTO_CLOUD_API_ENDPOINT"])
         
         # Update deployment with new Bento
         bentoml.deployment.update(
