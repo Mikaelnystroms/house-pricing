@@ -1,6 +1,7 @@
 # House Prices Prediction
 
-This repository demonstrates how to predict house sale prices using the Ames Housing dataset. The project is part of the **ML Engineering Zoomcamp** capstone and also takes part in the Kaggle competition **[House Prices - Advanced Regression Techniques](https://www.kaggle.com/c/house-prices-advanced-regression-techniques)**. Accurate price predictions are valuable for buyers, sellers, and agents, and this project provides an end-to-end solution—spanning exploratory data analysis, feature engineering, model training, and deployment.
+This repository demonstrates how to predict house sale prices using the Ames Housing dataset. The project is part of the **ML Engineering Zoomcamp** capstone and also takes part in the Kaggle competition **[House Prices - Advanced Regression Techniques](https://www.kaggle.com/c/house-prices-advanced-regression-techniques)**. Accurate price predictions are valuable for buyers, sellers, and agents, and this project provides an end-to-end solution—spanning exploratory data analysis, feature engineering, model training, and deployment. My submission ended up at 893rd spot on the leaderboard :)
+
 
 ---
 [![python](https://img.shields.io/badge/Python-3.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
