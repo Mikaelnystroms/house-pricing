@@ -6,62 +6,33 @@ on:
       - main
 
 jobs:
-  deploy:
+  build_and_deploy:
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-        
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        
-    - name: Configure BentoML Cloud
-      env:
-        BENTO_CLOUD_API_KEY: ${{ secrets.BENTO_CLOUD_API_KEY }}
-        BENTO_CLOUD_API_ENDPOINT: ${{ secrets.BENTO_CLOUD_API_ENDPOINT }}
-      run: |
-        echo "Configuring BentoML Cloud..."
-        # Create .bentoml/config.yaml
-        mkdir -p ~/.bentoml
-        cat > ~/.bentoml/config.yaml << EOF
-        api_token: ${{ secrets.BENTO_CLOUD_API_KEY }}
-        endpoint: ${{ secrets.BENTO_CLOUD_API_ENDPOINT }}
-        EOF
-        
-    - name: Build and Push Bento
-      run: |
-        bentoml build
-        bentoml push
-      
-    - name: Get latest Bento tag
-      id: get_tag
-      run: |
-        BENTO_TAG=$(bentoml list -o json | jq -r '.[0].tag')
-        echo "BENTO_TAG=${BENTO_TAG}" >> $GITHUB_ENV
-        
-    - name: Update Deployment
-      env:
-        BENTO_CLOUD_API_KEY: ${{ secrets.BENTO_CLOUD_API_KEY }}
-        BENTO_CLOUD_API_ENDPOINT: ${{ secrets.BENTO_CLOUD_API_ENDPOINT }}
-      run: |
-        python - <<EOF
-        import bentoml
-        import os
-        
-        # Configure BentoML client
-        bentoml.set_cloud_api_token(os.environ["BENTO_CLOUD_API_KEY"])
-        bentoml.set_cloud_endpoint(os.environ["BENTO_CLOUD_API_ENDPOINT"])
-        
-        # Update deployment with new Bento
-        bentoml.deployment.update(
-            name="housing-model-v1",
-            bento="${{ env.BENTO_TAG }}"
-        )
-        EOF 
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build and Deploy
+        uses: bentoml/deploy-bento-action@main
+        with:
+          deployment_name: housing-model-v1
+          cloud_api_token: ${{ secrets.BENTO_CLOUD_API_KEY }}
+          cloud_endpoint: ${{ secrets.BENTO_CLOUD_API_ENDPOINT }}
+          action: 'update'
+          bentoml_version: '1.3.18'
+        id: deploy-bento
+
+      - name: Display Bento Info
+        run: |
+          echo "Bento Repository: ${{ steps.deploy-bento.outputs.bento_repository }}"
+          echo "Bento Version: ${{ steps.deploy-bento.outputs.bento_version }}"
+          echo "Bento Tag: ${{ steps.deploy-bento.outputs.bento_tag }}" 
