@@ -29,9 +29,14 @@ jobs:
       run: |
         echo "Configuring BentoML Cloud..."
         bentoml cloud login --api-token $BENTO_CLOUD_API_KEY --endpoint $BENTO_CLOUD_API_ENDPOINT
+        bentoml cloud context create default --api-token $BENTO_CLOUD_API_KEY --endpoint $BENTO_CLOUD_API_ENDPOINT
+        bentoml cloud context update default --api-token $BENTO_CLOUD_API_KEY --endpoint $BENTO_CLOUD_API_ENDPOINT
+        bentoml cloud context list
         
-    - name: Build Bento
-      run: bentoml build
+    - name: Build and Push Bento
+      run: |
+        bentoml build
+        bentoml push
       
     - name: Get latest Bento tag
       id: get_tag
