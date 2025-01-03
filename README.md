@@ -14,79 +14,38 @@ This repository demonstrates how to predict house sale prices using the Ames Hou
 ![NumPy](https://img.shields.io/badge/NumPy-%23013243?logo=numpy&logoColor=white)
 
 ## Contents
-1. [Project Objectives](#project-objectives)
-2. [Models and Training](#models-and-training)
-3. [Deployment](#deployment)
-4. [Environment and Reproducibility](#environment-and-reproducibility)
-5. [EDA and Scripts](#eda-and-scripts)
+1. [Getting Started](#getting-started)
+2. [Project Details](#project-details)
+3. [Models Evaluated](#models-evaluated)
+4. [Simplified Model](#simplified-model)
+5. [Project Structure](#project-structure)
+6. [Environment Setup](#environment-setup)
 
 ---
 
-## Project Objectives
-1. **Perform Exploratory Data Analysis (EDA) and Feature Engineering**  
-   Gain insights into the data and transform features (e.g., encoding categorical variables, handling missing values).
+## Getting Started
 
-2. **Train and Evaluate Multiple Models**  
-   Evaluate a range of regression models, including:
-   - **Linear Regression**  
-   - **Ridge** and **Lasso**  
-   - **Random Forest**  
-   - **XGBoost** (with grid search tuning for hyperparameters such as learning rate, max depth, and number of estimators)
+1. **Exploratory Data Analysis & Model Training**
+   - Start with `eda.ipynb` to explore the dataset and understand the feature engineering process. Easiest way to configure the environment is to use 'uv sync' to install the dependencies.
+   - The notebook will guide you through training various models and selecting the best performing one
+   - A simplified XGBoost model using 8 key features will be created for deployment, in the notebook the model is trained and saved as a BentoML model
 
-3. **Implement a Simplified XGBoost Model**  
-   A stripped-down version of the XGBoost model uses only 8 features—OverallQual, GrLivArea, GarageCars, GarageArea, TotalBsmtSF, FullBath, TotRmsAbvGrd, and YearBuilt—to balance accuracy with ease of deployment.
+2. **BentoML Setup & Deployment**
+   - Create an account at [BentoML Cloud](https://cloud.bentoml.com)
+   - Install the BentoML CLI and login:
+     ```bash
+     bentoml cloud login
+     ```
+   - Build and deploy the service:
+     ```bash
+     bentoml build
+     bentoml deploy
+     ```
+   - Once deployed, you'll receive an endpoint URL for making predictions
 
-4. **Ensure Reproducibility**  
-   Provide training scripts and clear instructions to replicate results.
-
-5. **Deploy the Model**  
-   Containerize and deploy the model (using **BentoML** and **Docker**) on a cloud platform, with underlying infrastructure managed by GCP.
-
----
-
-## Models and Training
-
-1. **Model Training and Hyperparameter Tuning**  
-   - **XGBoost** was the main model tuned using grid search over parameters such as `learning_rate`, `max_depth`, and `n_estimators`.
-   - **Simplified XGBoost** was additionally created for quick user inference, requiring only 8 features instead of the full ~270.
-
-2. **Performance Evaluation**  
-   - Each model was evaluated using standard metrics like RMSE (Root Mean Squared Error).  
-   - Feature selection and hyperparameter tuning were iteratively refined to balance performance and model complexity.
-
----
-
-## Deployment
-
-### BentoML
-- **Build a Bento**:  
-  ```bash
-  bentoml build
-  ```
-  This command creates a Bento with all necessary files and dependencies.
-
-- **Deploy** (Command-Line Interface):  
-  ```bash
-  bentoml deploy [bento_name] -n [deployment_name]
-  ```
-  Attempts to deploy the Bento to the configured cloud platform.  
-  *Note:* For me, deployment remained stuck in 'deploying' state for more than 45 minutes. Try to redeploy the bento if this happens to you. As a sidenote, this was the first time I deployed a service to BentoML Cloud and it was not a pleasant experience. I had an idea of setting up a github action to deploy the bento automatically, but I gave up on it after a few attempts, the bentoml docs does not mention CI/CD at all and it was a hassle to try and set up.
-
-### Docker Containerization
-1. **Generate a Docker Image**:  
+3. **Testing the Deployed Model**
    ```bash
-   bentoml containerize <bento-name>
-   ```
-   This builds a Docker image containing your Bento.
-
-2. **Run the Container Locally**:  
-   ```bash
-   docker run -it --rm -p 3000:3000 <container-image>
-   ```
-
-3. **Test the Containerized Model**:  
-   ```bash
-   curl -X POST http://localhost:3000/predict \
+   curl -X POST https://your-endpoint-url/predict \
      -H "Content-Type: application/json" \
      -d '{
        "input_data": {
@@ -101,29 +60,38 @@ This repository demonstrates how to predict house sale prices using the Ames Hou
        }
      }'
    ```
-   When successful, the model will return a predicted house price.
 
 ---
 
-## Environment and Reproducibility
-- **Virtual Environment**: Created via `uv` (or any Python virtual environment manager of choice).
-- **Dependencies**: Listed in `pyproject.toml`.
-- **BentoML Configuration**: Managed by `bentofile.yaml` and `service.py`.
+## Project Details
+
+### Models Evaluated
+- Linear Regression
+- Ridge and Lasso Regression
+- Random Forest
+- XGBoost (with hyperparameter tuning)
+
+### Simplified Model
+The deployed model uses 8 key features:
+- OverallQual
+- GrLivArea
+- GarageCars
+- GarageArea
+- TotalBsmtSF
+- FullBath
+- TotRmsAbvGrd
+- YearBuilt
+
+### Project Structure
+- `eda.ipynb`: Interactive notebook for data analysis and model training
+- `service.py`: BentoML service definition for model deployment
+- `bentofile.yaml`: BentoML configuration
+- `pyproject.toml`: Project dependencies
+
+### Environment Setup
+- Use `uv` or your preferred Python virtual environment manager
+- Install dependencies from `pyproject.toml`
 
 ---
 
-## EDA and Scripts
-
-1. **eda.ipynb**  
-   - Interactive Jupyter Notebook for data analysis and experimentation.  
-   - Useful for visualizations and exploratory work.
-
-2. **eda.py**  
-   - Script-based EDA and training.  
-   - Allows automated or command-line execution without the notebook environment.
-
-Both approaches demonstrate how the model (and its variations) are trained and evaluated. Comparing their outputs can help you understand trade-offs between the simpler 8-feature model and a more comprehensive model using the full dataset.
-
----
-
-**Thank you for checking out this project!** If you have any questions or suggestions, feel free to open an issue or submit a pull request. Happy predicting!
+**Note:** If you encounter any issues during deployment or have questions, feel free to open an issue in this repository. Happy predicting!
